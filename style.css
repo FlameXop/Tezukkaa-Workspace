@@ -11,7 +11,8 @@ body {
     color: var(--text);
     font-family: 'Inter', sans-serif;
     margin: 0;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Critical for mobile */
+    width: 100%;
 }
 
 /* --- NAV --- */
@@ -20,6 +21,7 @@ body {
     display: flex; justify-content: space-between; align-items: center;
     padding: 0 5%; box-sizing: border-box; z-index: 1000;
     backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+    background: rgba(5, 5, 5, 0.85); 
 }
 .logo { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; color: #fff; text-decoration: none; }
 .logo a { color: #fff; text-decoration: none; }
@@ -28,11 +30,11 @@ body {
 .cta-btn {
     background: var(--accent); color: #000; padding: 12px 24px;
     border-radius: 30px; text-decoration: none; font-weight: 600;
-    transition: transform 0.2s; display: inline-block;
+    transition: transform 0.2s; display: inline-block; white-space: nowrap;
 }
 .cta-btn:hover { transform: scale(1.05); }
-.cta-btn.small { padding: 8px 16px; font-size: 0.9rem; }
-.cta-btn.big { padding: 18px 40px; font-size: 1.2rem; }
+.cta-btn.small { padding: 8px 16px; font-size: 0.85rem; }
+.cta-btn.big { padding: 18px 40px; font-size: 1.1rem; }
 
 /* --- HERO SECTION --- */
 .hero {
@@ -40,16 +42,24 @@ body {
     display: flex; 
     align-items: center; 
     justify-content: space-between;
-    padding: 120px 10% 60px; /* Added top padding for nav */
+    padding: 100px 10% 60px; 
     position: relative;
+    box-sizing: border-box;
 }
 .hero-content { width: 45%; z-index: 2; }
-.hero-content h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; }
+
+/* 🔥 FLUID TYPOGRAPHY: Scales automatically between 2rem and 4.5rem */
+.hero-content h1 { 
+    font-size: clamp(2.2rem, 6vw, 4.5rem); 
+    line-height: 1.1; 
+    margin-bottom: 20px; 
+}
+
 .highlight { color: var(--accent); }
 .hero-sub { font-size: 1.2rem; color: #aaa; margin-bottom: 30px; line-height: 1.5; }
 .version-text { display: block; margin-top: 15px; font-size: 0.8rem; color: #666; }
 
-.hero-visual { position: relative; width: 50%; }
+.hero-visual { position: relative; width: 50%; display: flex; justify-content: center; }
 .hero-img { width: 100%; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 20px 80px rgba(255,187,51,0.1); }
 .floating { animation: float 6s ease-in-out infinite; }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
@@ -65,11 +75,12 @@ body {
 .glass-card h3 { color: var(--accent); margin-top: 0; font-size: 1.5rem; }
 .glass-card p { line-height: 1.6; color: #ddd; }
 
-/* --- SCROLLYTELLING (APPLE STYLE) --- */
+/* --- SCROLLYTELLING --- */
 .scroll-reveal-container {
     position: relative;
     display: flex;
-    height: 400vh; /* Determines length of scroll */
+    /* Height ensures enough scroll space */
+    height: 350vh; 
     background: #000;
 }
 
@@ -81,10 +92,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Ensure frame stays strictly within viewport */
+    overflow: hidden; 
 }
 
 .mac-window {
     width: 80%;
+    max-width: 600px;
     aspect-ratio: 16/9;
     background: #1a1a1a;
     border-radius: 12px;
@@ -92,6 +106,7 @@ body {
     position: relative;
     overflow: hidden;
     box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    z-index: 5;
 }
 
 .mac-header {
@@ -102,22 +117,19 @@ body {
 
 .scroll-img {
     position: absolute; top: 30px; left: 0; width: 100%; height: calc(100% - 30px);
-    object-fit: cover; opacity: 0; transition: opacity 0.8s ease;
+    object-fit: cover; opacity: 0; transition: opacity 0.6s ease;
 }
 .scroll-img.active { opacity: 1; }
 
-.scroll-text-container {
-    width: 50%;
-    /* No padding-top here, handled by spacing in steps */
-}
+.scroll-text-container { width: 50%; }
 
 .step {
-    height: 100vh; /* One step per viewport height */
+    height: 80vh; /* Space out steps */
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 0 60px;
-    opacity: 0.3;
+    opacity: 0.2;
     transition: opacity 0.5s;
 }
 .step.active-step { opacity: 1; }
@@ -155,6 +167,7 @@ footer { padding: 80px 10% 40px; text-align: center; border-top: 1px solid var(-
     backdrop-filter: blur(10px); border: 1px solid var(--border);
     border-radius: 16px; padding: 60px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
 }
 .text-wrapper h1 { font-size: 3rem; margin-bottom: 20px; color: var(--accent); }
 .text-wrapper h2 { font-size: 1.8rem; margin-top: 40px; margin-bottom: 15px; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
@@ -166,66 +179,91 @@ footer { padding: 80px 10% 40px; text-align: center; border-top: 1px solid var(-
 
 
 /* =========================================
-   MOBILE RESPONSIVENESS (The Fix)
+   MOBILE RESPONSIVENESS (FINAL FIX)
    ========================================= */
 
 @media (max-width: 900px) {
-    /* General Padding Fixes */
+    
+    /* 1. HERO FIX: Stack vertical & reset height */
     .hero { 
-        flex-direction: column; /* Stack text and image */
-        padding: 100px 5% 60px; 
+        flex-direction: column; 
+        padding: 100px 5% 40px; 
         text-align: center;
-        height: auto;
+        min-height: auto; 
     }
-    .hero-content { width: 100%; margin-bottom: 50px; }
-    .hero-content h1 { font-size: 2.5rem; }
+    
+    .hero-content { 
+        width: 100%; 
+        margin-bottom: 40px; 
+    }
+    
+    /* 2. AUTO-SCALING TEXT: This prevents the huge overflow */
+    .hero-content h1 { 
+        font-size: clamp(2.5rem, 10vw, 3.5rem);
+    } 
+    
     .hero-visual { width: 100%; }
+    .hero-img { 
+        max-width: 100%; /* Ensure image never exceeds screen */
+        height: auto; 
+    }
 
-    /* Story Section */
-    .story-section { padding: 60px 5%; }
-    .grid-2 { grid-template-columns: 1fr; gap: 20px; } /* Single column */
+    /* 3. STORY FIX */
+    .story-section { padding: 50px 5%; }
+    .grid-2 { grid-template-columns: 1fr; gap: 20px; }
+    .glass-card { padding: 30px; }
 
-    /* The "Apple" Scroll Section on Mobile */
+    /* 4. SCROLL REVEAL FIX (STACKED LAYOUT) */
     .scroll-reveal-container {
-        flex-direction: column; /* Stack sticky frame on top of text */
-        height: auto; /* Allow natural height */
+        flex-direction: column;
+        height: auto; /* Remove massive height on mobile */
     }
     
+    /* Stick the image container to top */
     .sticky-frame {
-        position: relative; /* Unstick it for simpler mobile flow, OR keep sticky */
+        position: sticky;
+        top: 70px; /* Below Nav */
         width: 100%;
-        height: 50vh; /* Smaller height on mobile */
-        top: 70px; /* Below nav */
+        height: 45vh; /* Fixed height for image area */
         z-index: 10;
-        background: #000; /* Hide text scrolling behind it if sticky */
-        padding: 20px 0;
+        background: #000;
+        border-bottom: 1px solid #222;
+        padding-top: 10px;
     }
     
-    .mac-window { width: 90%; }
+    .mac-window { 
+        width: 90%; 
+        max-width: none;
+    }
     
     .scroll-text-container {
         width: 100%;
-        padding-top: 20px;
+        position: relative;
+        z-index: 5;
+        background: #000;
+        padding-bottom: 60px;
     }
     
     .step {
         height: auto;
-        min-height: 60vh;
+        min-height: 50vh; /* Minimum space for each text block */
         padding: 40px 20px;
         text-align: center;
-        opacity: 0.5; /* Keep slightly visible */
-        justify-content: flex-start;
+        opacity: 0.3;
+        margin-bottom: 20px;
     }
     .step.active-step { opacity: 1; }
+    .step h2 { font-size: 1.8rem; }
+    .step p { font-size: 1rem; }
 
-    /* Pricing & Footer */
-    .pricing-grid { flex-direction: column; align-items: center; }
-    .price-card { width: 90%; transform: none !important; }
+    /* 5. GENERAL FIXES */
+    .pricing-grid { flex-direction: column; align-items: center; width: 100%; }
+    .price-card { width: 100%; max-width: 320px; box-sizing: border-box; }
     
+    footer { padding: 60px 5% 40px; }
     .footer-cta h2 { font-size: 2rem; }
-    .legal-links { flex-direction: column; gap: 15px; }
+    .legal-links { flex-direction: column; gap: 20px; }
 
-    /* Legal Pages */
     .text-wrapper { padding: 30px 20px; }
-    .text-wrapper h1 { font-size: 2rem; }
+    .text-wrapper h1 { font-size: 2.2rem; }
 }
